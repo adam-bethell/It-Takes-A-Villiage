@@ -23,6 +23,7 @@ var nav_path_index = 0
 # Data
 var player_id = -1
 var owner_id = -1
+var citizen_id = null
 var start_position = Vector3.ZERO
 var _inventory = []
 	

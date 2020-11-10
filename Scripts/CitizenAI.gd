@@ -1,16 +1,40 @@
 extends Node
 
+var enabled = false
+var citizen = null
+var citizen_tasks = null
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var _current_task = null
 
+func _process(delta):
+	if not enabled:
+		return
+	
+	if _current_task == null:
+		next_task()
+	elif _current_task["type"] == "move":
+		# Check on the move task
+		var position = citizen.global_transform.origin
+		var destination = _current_task["destination"]
+		if position.distance_to(destination) < Globals.ACTION_DISTANCE:
+			next_task()
+	elif _current_task["type"] == "equip":
+		# Attempt the equip task
+		var result = Globals.game_controller.equip_item(
+			citizen.name,
+			_current_task["item"]
+		)
+		if result:
+			next_task()
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+func next_task():
+	_current_task = citizen_tasks.get_next_task()
+	if _current_task != null and _current_task["type"] == "move":
+		Globals.game_controller.set_citizen_destination(
+			citizen.name,
+			_current_task["destination"],
+			_current_task["is_walking"]
+		)
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func time_loop():
+	_current_task = null

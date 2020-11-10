@@ -62,11 +62,12 @@ remotesync func _rpc_add_citizen(mesh_path, position):
 	# Add game object
 	var citizen = citizen_node.instance()
 	citizen.set_name(str(_citizen_id))
+	citizen.citizen_id = _citizen_id
 	_citizen_id += 1
 	citizen.set_mesh_path(mesh_path)
-	citizen.global_transform.origin = position
 	citizen.start_position = position
 	add_child(citizen)
+	citizen.global_transform.origin = position
 	if get_tree().is_network_server():
 		_citizens.push_back(citizen)
 		_citizens.shuffle()
