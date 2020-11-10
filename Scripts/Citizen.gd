@@ -23,6 +23,7 @@ var nav_path_index = 0
 # Data
 var player_id = -1
 var owner_id = -1
+var start_position = Vector3.ZERO
 var _inventory = []
 	
 	
@@ -105,7 +106,7 @@ func time_loop():
 	linear_velocity = Vector3.ZERO
 	nav_path = []
 	nav_path_index = 0
-	global_transform.origin = Vector3.ZERO
+	global_transform.origin = start_position
 	player_id = -1
 	
 	_inventory = []

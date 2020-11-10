@@ -500,6 +500,8 @@ transform = Transform( 1, 0, 0, 0, 0.845597, 0.533821, 0, -0.533821, 0.845597, 0
 fov = 60.0
 size = 200.0
 far = 857.0
+
+[node name="CitizenAI" type="Node" parent="."]
 [connection signal="pressed" from="UI/BuildingInfo/ItemList/Button1" to="UI/BuildingInfo" method="_on_item_pressed" binds= [ 0 ]]
 [connection signal="pressed" from="UI/BuildingInfo/ItemList/Button2" to="UI/BuildingInfo" method="_on_item_pressed" binds= [ 1 ]]
 [connection signal="pressed" from="UI/BuildingInfo/ItemList/Button3" to="UI/BuildingInfo" method="_on_item_pressed" binds= [ 2 ]]

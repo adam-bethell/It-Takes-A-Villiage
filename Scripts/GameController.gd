@@ -3,18 +3,27 @@ extends Navigation
 signal missions_updated(mission_data)
 signal player_victory(name, objective)
 
+onready var citizen_tasks_node = preload("res://Prefabs/CitizenTasks.tscn")
+onready var citizen_ai_node = preload("res://Prefabs/CitizenAI.tscn")
+
 const BUILDING_RANGE = 1.0
 
 var _mission_data = []
+var _citizen_tasks = {}
 
 #| Create citizens
 func _ready():
 	Globals.game_controller = self
 	if get_tree().is_network_server():
+		# Create citizens
 		for i in range(16):
 			var pos = Vector3(3 * i, 0, 0)
-			$Citizens.add_citizen(pos)
+			var citizen_id = $Citizens.add_citizen(pos)
+			var citizen_tasks = citizen_tasks_node.instance()
+			citizen_tasks.citizen_id = citizen_id
+			_citizen_tasks[citizen_id] = citizen_tasks
 			
+		# Assign player citizens and objectives
 		var objectives = Objectives.MISSIONS
 		var o = 0
 		randomize()
@@ -26,9 +35,18 @@ func _ready():
 			objective["equiped_items"] = []
 			_mission_data.push_back(objective)
 			o += 1
-			
 		_mission_data.shuffle()
 		_update_missions()
+		
+		# Give AI to non-player citizens
+		for citizen in $Citizens.get_children():
+			if citizen.player_id == -1:
+				var citizen_ai = citizen_ai_node.instance()
+				citizen_ai.citizen_tasks = _citizen_tasks[citizen.name]
+				get_node("../CitizenAI").add_child(citizen_ai)
+	
+func _process(delta):
+	pass
 	
 #| Set citizen destination
 func set_player_citizen_destination(dest, walk):
@@ -52,8 +70,12 @@ remote func _rpc_set_citizen_destination(citizen_id, dest, walk):
 	
 func _set_citizen_destination(citizen_id, dest, walk):
 	assert(get_tree().is_network_server())
-	$Citizens.get_citizen_by_citizen_id(citizen_id).set_destination(dest, walk)
+	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
+	citizen.set_destination(dest, walk)
 	$Citizens.sync_positions()
+	if citizen.player_id != -1: 
+		# Record tasks for player controlled citizens
+		_citizen_tasks[citizen_id].log_movement(citizen.global_transform.origin, dest, walk)
 	
 #| Equip item
 func equip_player_item(item):
@@ -63,7 +85,7 @@ func equip_player_item(item):
 
 func equip_item(citizen_id, item):
 	if get_tree().is_network_server():
-		return _equip_item(citizen_id, item)
+		_equip_item(citizen_id, item)
 	else:
 		rpc_id(1, "_rpc_equip_item", citizen_id, item)
 
@@ -83,8 +105,10 @@ func _equip_item(citizen_id, item):
 	if dist < BUILDING_RANGE:
 		citizen.equip_item(item)
 		_update_missions()
-		return true
-	return false
+		if citizen.player_id != -1: 
+			# Record tasks for player controlled citizens
+			_citizen_tasks[citizen_id].log_equip(item)
+
 
 func _update_missions():
 	assert(get_tree().is_network_server())
@@ -160,3 +184,6 @@ remotesync func _rpc_player_won(name, objective):
 
 func _on_time_loop():
 	$Citizens.time_loop()
+	for citizen_id in _citizen_tasks:
+		_citizen_tasks[citizen_id].time_loop()
+	#get_node("../CitizenAI")

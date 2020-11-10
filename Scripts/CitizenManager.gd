@@ -54,7 +54,9 @@ func get_mesh_path():
 	
 func add_citizen(position):
 	var mesh_path = get_mesh_path()
+	var citizen_id = _citizen_id
 	rpc("_rpc_add_citizen", mesh_path, position)
+	return citizen_id
 
 remotesync func _rpc_add_citizen(mesh_path, position):
 	# Add game object
@@ -63,6 +65,7 @@ remotesync func _rpc_add_citizen(mesh_path, position):
 	_citizen_id += 1
 	citizen.set_mesh_path(mesh_path)
 	citizen.global_transform.origin = position
+	citizen.start_position = position
 	add_child(citizen)
 	if get_tree().is_network_server():
 		_citizens.push_back(citizen)
@@ -81,6 +84,7 @@ func assign_citizen_to_player(id):
 		get_node("../../UI/Diagetic").add_child(info)
 	else:
 		rpc_id(id, "_rpc_assign_citizen_to_player", citizen.name)
+	return citizen.name
 
 remote func _rpc_assign_citizen_to_player(citizen_id):
 	var citizen = get_citizen_by_citizen_id(citizen_id)
