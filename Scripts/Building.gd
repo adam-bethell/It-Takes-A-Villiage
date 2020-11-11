@@ -1,24 +1,22 @@
 extends Node
 
-signal building_selected(this_building)
-signal building_updated(this_building)
-
 export(Objectives.BUILDINGS) var building_type 
-export(int) var building_id
 
 onready var entrance_position = $Entrance.global_transform.origin
+
+var building_id
 
 var _inventory = []
 
 func _ready():
-	for item in Objectives.BUILDING_INFO[building_type]["items"]:
+	for item in Objectives.BUILDING_INFO[building_type]["default_items"]:
 		_inventory.push_back({
 			"item": item,
 			"available": true,
 		})
 
 func selected():
-	emit_signal("building_selected", self)
+	get_parent().on_building_selected(self)
 	
 func get_inventory():
 	var inventory = []

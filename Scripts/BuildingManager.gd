@@ -1,5 +1,8 @@
 extends Spatial
 
+signal building_selected(building)
+signal building_updated(building)
+
 func get_building(building_id):
 	for building in get_children():
 		if building.building_id == building_id:
@@ -22,3 +25,15 @@ func get_nearest_building(position):
 			nearest_distance = distance
 			nearest_building = building
 	return nearest_building
+	
+func assign_building_ids():
+	var id = 0
+	for building in get_children():
+		building.bulding_id = id
+		id += 1
+	
+func on_building_selected(building):
+	emit_signal("building_selected", building)
+
+func on_building_updated(building):
+	emit_signal("building_updated", building)

@@ -101,39 +101,39 @@ enum BUILDINGS {
 const BUILDING_INFO = {
 	BUILDINGS.CHURCH: {
 		"label": "Church",
-		"items": [ITEMS.HOLY_WATER, ITEMS.DOG_COLLAR, ITEMS.BIBLE],
+		"default_items": [ITEMS.HOLY_WATER, ITEMS.DOG_COLLAR, ITEMS.BIBLE],
 	},
 	BUILDINGS.FIRE_STATION: {
 		"label": "Fire Station",
-		"items": [ITEMS.DISGUISE, ITEMS.AXE, ITEMS.BOLT_CUTTERS],
+		"default_items": [ITEMS.DISGUISE, ITEMS.AXE, ITEMS.BOLT_CUTTERS],
 	},
 	BUILDINGS.HOSPITAL: {
 		"label": "Hospital",
-		"items": [ITEMS.DRUGS, ITEMS.CADAVER, ITEMS.CONTRACEPTIVES],
+		"default_items": [ITEMS.DRUGS, ITEMS.CADAVER, ITEMS.CONTRACEPTIVES],
 	},
 	BUILDINGS.OFFICE: {
 		"label": "Office",
-		"items": [ITEMS.CONTRACT, ITEMS.VIDEO, ITEMS.CAMERA],
+		"default_items": [ITEMS.CONTRACT, ITEMS.VIDEO, ITEMS.CAMERA],
 	},
 	BUILDINGS.POLICE_STATION: {
 		"label": "Police Station",
-		"items": [ITEMS.GUN, ITEMS.BALACLAVA, ITEMS.FAKE_ID],
+		"default_items": [ITEMS.GUN, ITEMS.BALACLAVA, ITEMS.FAKE_ID],
 	},
 	BUILDINGS.POST_OFFICE: {
 		"label": "Post Office",
-		"items": [ITEMS.ENVELOPES, ITEMS.TRIANGLE, ITEMS.BOX],
+		"default_items": [ITEMS.ENVELOPES, ITEMS.TRIANGLE, ITEMS.BOX],
 	},
 	BUILDINGS.RESTAURANT: {
 		"label": "Restaurant",
-		"items": [ITEMS.KNIFE, ITEMS.KARAOKE, ITEMS.STEAK],
+		"default_items": [ITEMS.KNIFE, ITEMS.KARAOKE, ITEMS.STEAK],
 	},
 	BUILDINGS.SCHOOL: {
 		"label": "School",
-		"items": [ITEMS.CHILD, ITEMS.BUNSON_BURNER, ITEMS.MICROSCOPE],
+		"default_items": [ITEMS.CHILD, ITEMS.BUNSON_BURNER, ITEMS.MICROSCOPE],
 	},
 	BUILDINGS.DEAD_DROP: {
-		"label": "",
-		"items": [],
+		"label": "Dead Drop",
+		"default_items": [],
 	},
 }
 
