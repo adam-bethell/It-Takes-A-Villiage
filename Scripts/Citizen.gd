@@ -81,6 +81,14 @@ func equip_item(item):
 		else:
 			rpc_id(owner_id, "_rpc_update_inventory", _inventory)
 
+func drop_item(item):
+	assert(get_tree().is_network_server())
+	_inventory.erase(item)
+	if owner_id != -1:
+		if owner_id == 1:
+			emit_signal("citizen_updated")
+		else:
+			rpc_id(owner_id, "_rpc_update_inventory", _inventory)
 
 remote func _rpc_update_inventory(inventory):
 	_inventory = inventory
@@ -88,6 +96,9 @@ remote func _rpc_update_inventory(inventory):
 	
 func get_inventory():
 	return _inventory
+	
+func has_item():
+	pass
 	
 #| Mesh
 func set_mesh_path(path):

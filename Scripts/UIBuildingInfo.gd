@@ -21,7 +21,6 @@ func _on_building_updated(building):
 	_inventory = _selected_building.get_inventory_details()
 	for item_details in _inventory:
 		_create_item_button(item_details)
-		_create_item_button(item_details)
 
 func _on_item_pressed(item):
 	if _selected_building == null:

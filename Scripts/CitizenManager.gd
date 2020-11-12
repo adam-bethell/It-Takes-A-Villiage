@@ -25,6 +25,7 @@ var _meshes = [
 ]
 onready var citizen_node = preload("res://Prefabs/Citizen.tscn")
 onready var citizen_info_node = preload("res://Prefabs/CitizenInfo.tscn")
+onready var citizen_inventory = get_node("../../UI/CitizenInventory")
 var _citizen_id = 0
 var _citizens = []
 
@@ -83,8 +84,9 @@ func assign_citizen_to_player(id):
 		var info = citizen_info_node.instance()
 		info.follow_citizen(citizen)
 		get_node("../../UI/Diagetic").add_child(info)
+		citizen_inventory.follow_citizen(citizen)
 	else:
-		rpc_id(id, "_rpc_assign_citizen_to_player", citizen.name)
+		rpc_id(id, "_rpc_assign_citizen_to_player", citizen.citizen_id)
 	return citizen.name
 
 remote func _rpc_assign_citizen_to_player(citizen_id):
@@ -95,6 +97,7 @@ remote func _rpc_assign_citizen_to_player(citizen_id):
 	var info = citizen_info_node.instance()
 	info.follow_citizen(citizen)
 	get_node("../../UI/Diagetic").add_child(info)
+	citizen_inventory.follow_citizen(citizen)
 
 
 func set_player_citizen_destination(id, dest, walk):

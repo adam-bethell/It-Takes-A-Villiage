@@ -37,3 +37,8 @@ func on_building_selected(building):
 
 func on_building_updated(building):
 	emit_signal("building_updated", building)
+
+func time_loop():
+	assert(get_tree().is_network_server())
+	for building in get_children():
+		building.time_loop()

@@ -118,6 +118,9 @@ margin_left = 105.0
 margin_top = 212.0
 margin_right = 921.0
 margin_bottom = 384.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="PlayerName" type="LineEdit" parent="."]
 anchor_left = 0.5
@@ -125,12 +128,47 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -267.5
-margin_top = -43.5
+margin_top = 1.88458
 margin_right = 267.5
-margin_bottom = 43.5
+margin_bottom = 88.8846
 custom_fonts/font = ExtResource( 1 )
 align = 1
 max_length = 20
+placeholder_text = "username"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IP" type="LineEdit" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -441.253
+margin_top = -112.0
+margin_right = -30.2535
+margin_bottom = -33.0
+custom_fonts/font = ExtResource( 1 )
+align = 1
+max_length = 20
+placeholder_text = "ip"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Port" type="LineEdit" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 50.5
+margin_top = -112.0
+margin_right = 461.5
+margin_bottom = -33.0
+custom_fonts/font = ExtResource( 1 )
+align = 1
+max_length = 20
+placeholder_text = "port"
 __meta__ = {
 "_edit_use_anchors_": false
 }

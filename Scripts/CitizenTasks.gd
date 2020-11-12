@@ -26,8 +26,12 @@ func log_equip(item):
 		"item": item,
 	})
 	
-func log_drop():
-	pass
+func log_drop(item):
+	_tasks.push_back({
+		"type": "drop",
+		"time": 0.0,
+		"item": item,
+	})
 	
 	
 func get_next_task():

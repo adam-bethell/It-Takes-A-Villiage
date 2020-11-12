@@ -26,6 +26,14 @@ func _process(delta):
 		)
 		if result:
 			next_task()
+	elif _current_task["type"] == "drop":
+		# Attempt the drop task
+		var result = Globals.game_controller.drop_item(
+			citizen.name,
+			_current_task["item"]
+		)
+		if result:
+			next_task()
 
 func next_task():
 	_current_task = citizen_tasks.get_next_task()

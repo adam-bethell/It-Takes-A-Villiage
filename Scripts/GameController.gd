@@ -13,6 +13,9 @@ var _citizen_ai = {}
 #| Create citizens
 func _ready():
 	Globals.game_controller = self
+	if not get_tree().is_network_server():
+		get_node("../UI/TimeLoop").hide()
+	
 	if get_tree().is_network_server():
 		# Create citizens
 		for i in range(16):
@@ -103,8 +106,9 @@ func _equip_item(citizen_id, item):
 	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
 	var building = $BoardNavMesh/Buildings.get_nearest_building(citizen.global_transform.origin)
 	var dist = citizen.global_transform.origin.distance_to(building.entrance_position)
-	if dist < Globals.ACTION_DISTANCE:
+	if dist < Globals.ACTION_DISTANCE and building.has_item(item):
 		citizen.equip_item(item)
+		building.drop_item(item)
 		_update_missions()
 		if citizen.player_id != -1: 
 			# Record tasks for player controlled citizens
@@ -112,7 +116,45 @@ func _equip_item(citizen_id, item):
 		return true
 	return false
 
+#| Drop Item
+func drop_player_item(item):
+	var id = get_tree().get_network_unique_id()
+	var citizen_id = $Citizens.get_citizen_by_player_id(id).citizen_id
+	drop_item(citizen_id, item)
+	
+func drop_item(citizen_id, item):
+	if get_tree().is_network_server():
+		return _drop_item(citizen_id, item)
+	else:
+		rpc_id(1, "_rpc_drop_item", citizen_id, item)
+		
+remote func _rpc_drop_item(citizen_id, item):
+	var id = get_tree().get_rpc_sender_id()
+	assert(get_tree().is_network_server())
+	if $Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
+		assert(false)
+		return
+	_drop_item(citizen_id, item)
+	
+func _drop_item(citizen_id, item):
+	assert(get_tree().is_network_server())
+	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
+	if not citizen.has_item():
+		return false
+	var buildings = $BoardNavMesh/Buildings.get_buildings(Objectives.BUILDINGS.DEAD_DROP)
+	for building in buildings:
+		var dist = citizen.global_transform.origin.distance_to(building.entrance_position)
+		if dist < Globals.ACTION_DISTANCE:
+			citizen.drop_item(item)
+			building.equip_item(item)
+			_update_missions()
+			if citizen.player_id != -1: 
+				# Record tasks for player controlled citizens
+				_citizen_tasks[citizen_id].log_drop(item)
+			return true
+	return false
 
+#| Missions
 func _update_missions():
 	assert(get_tree().is_network_server())
 	# Update mission data
@@ -188,6 +230,7 @@ func _on_time_loop():
 	assert(get_tree().is_network_server())
 	# Call time_loop() in children
 	$Citizens.time_loop()
+	$Citizens.sync_positions()
 	for citizen_tasks in _citizen_tasks.values():
 		citizen_tasks.time_loop()
 	
@@ -206,5 +249,5 @@ func _on_time_loop():
 		else:
 			# Remove AI for player citizens
 			_citizen_ai[citizen_id].enabled = false
-	
-	
+			
+	$BoardNavMesh/Buildings.time_loop()
