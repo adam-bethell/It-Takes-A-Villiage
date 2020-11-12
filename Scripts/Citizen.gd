@@ -97,8 +97,8 @@ remote func _rpc_update_inventory(inventory):
 func get_inventory():
 	return _inventory
 	
-func has_item():
-	pass
+func has_item(item):
+	return _inventory.has(item)
 	
 #| Mesh
 func set_mesh_path(path):

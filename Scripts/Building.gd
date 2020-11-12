@@ -39,11 +39,7 @@ func drop_item(item):
 	assert(get_tree().is_network_server())
 	if building_type != Objectives.BUILDINGS.DEAD_DROP:
 		return
-	var item_to_remove = -1
-	for item_details in _inventory:
-		if item_details["item"] == item:
-			item_to_remove = item_details
-			break
+	var item_to_remove = _find_item(item)
 	_inventory.erase(item_to_remove)
 	rpc("_rpc_update_inventory", _inventory)
 
@@ -51,8 +47,16 @@ remotesync func _rpc_update_inventory(inventory):
 	_inventory = inventory
 	get_parent().on_building_updated(self)
 
-func has_item():
-	pass
+func has_item(item):
+	if _find_item(item) != null:
+		return true
+	return false
+
+func _find_item(item):
+	for item_details in _inventory:
+		if item_details["item"] == item:
+			return item_details
+	return null
 
 func time_loop():
 	_inventory.clear()

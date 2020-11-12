@@ -139,7 +139,7 @@ remote func _rpc_drop_item(citizen_id, item):
 func _drop_item(citizen_id, item):
 	assert(get_tree().is_network_server())
 	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
-	if not citizen.has_item():
+	if not citizen.has_item(item):
 		return false
 	var buildings = $BoardNavMesh/Buildings.get_buildings(Objectives.BUILDINGS.DEAD_DROP)
 	for building in buildings:
@@ -164,11 +164,17 @@ func _update_missions():
 			if inventory.has(requirement):
 				mission["equiped_items"].push_back(requirement)
 	# Strip out info that could be used for cheating
-	#var safe_mission_data = _mission_data.duplicate()
-	#for mission in safe_mission_data:
-		#mission["player_id"] = ""
-	# Sync mission data
-	rpc("_rpc_missions_updated", _mission_data)
+	for id in Network.player_data:
+		if id == 1:
+			continue
+			
+		var safe_mission_data = _mission_data.duplicate(true)
+		for mission in safe_mission_data:
+			if mission["player_id"] != id:
+				mission["player_id"] = -1
+				
+		rpc_id(id, "_rpc_missions_updated", safe_mission_data)
+		
 	emit_signal("missions_updated", _mission_data)
 	
 remote func _rpc_missions_updated(mission_data):
@@ -225,7 +231,7 @@ func _complete_mission(id):
 remotesync func _rpc_player_won(name, objective):
 	emit_signal("player_victory", name, objective)
 
-
+#| Time loop
 func _on_time_loop():
 	assert(get_tree().is_network_server())
 	# Call time_loop() in children

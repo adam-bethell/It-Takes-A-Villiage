@@ -6,7 +6,7 @@ func _on_HostButton_pressed():
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server($IP.text, Network.DEFAULT_NUM_PLAYERS)
+	peer.create_server(int($Port.text), Network.DEFAULT_NUM_PLAYERS)
 	get_tree().network_peer = peer
 	# Server needs to populate itself
 	Network.player_data[1] = $PlayerName.text
@@ -24,7 +24,7 @@ func _on_JoinButton_pressed():
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client($IP.text, $Port.text)
+	peer.create_client($IP.text, int($Port.text))
 	get_tree().network_peer = peer
 	# Hide buttons
 	$HostButton.hide()
