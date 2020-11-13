@@ -625,5 +625,5 @@ __meta__ = {
 [connection signal="building_selected" from="GameBoard/BoardNavMesh/Buildings" to="UI/BuildingInfo" method="_on_building_selected"]
 [connection signal="building_updated" from="GameBoard/BoardNavMesh/Buildings" to="UI/BuildingInfo" method="_on_building_updated"]
 [connection signal="pressed" from="UI/CompleteMission/Button" to="." method="_on_mission_complete_pressed"]
-[connection signal="pressed" from="UI/TimeLoop" to="UI/Timer" method="_on_TimeLoop_pressed"]
 [connection signal="pressed" from="UI/TimeLoop" to="." method="_on_time_loop"]
+[connection signal="pressed" from="UI/TimeLoop" to="UI/Timer" method="_on_TimeLoop_pressed"]

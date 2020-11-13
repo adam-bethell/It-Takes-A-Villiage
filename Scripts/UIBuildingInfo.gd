@@ -1,25 +1,25 @@
 extends Control
 
 onready var item_button_prefab = preload("res://Prefabs/UI/ItemButton.tscn")
-#onready var citizens = Globals.game_controller.get_child("Citizens")
-
-var _citizen = null
 
 var _objective_items = []
 var _selected_building = null
+var _citizen = null
 var _buttons = []
 var _inventory = []
 
 func _process(_delta):
-	pass
-	#if _selected_building != null:
-		#var pos = _citizen.global_transform.origin
-		#if pos.distance_to(building.building_entrance)
+	if _selected_building != null:
+		var pos = _citizen.global_transform.origin
+		if pos.distance_to(_selected_building.entrance_position) < Globals.ACTION_DISTANCE:
+			$ItemListContainer.show()
+		else:
+			$ItemListContainer.hide()
 	
 
 func _on_building_selected(building):
-	#var id = get_tree().get_network_unique_id()
-	#var _citizen = $citizens.get_citizen_by_player_id(id)
+	var id = get_tree().get_network_unique_id()
+	_citizen = Globals.game_controller.get_node("GameBoard/Citizens").get_citizen_by_player_id(id)
 	
 	_selected_building = building
 	$Label.text = Objectives.BUILDING_INFO[_selected_building.building_type]["label"]
@@ -28,6 +28,10 @@ func _on_building_selected(building):
 func _on_building_updated(building):
 	if building != _selected_building:
 		return
+	
+	var id = get_tree().get_network_unique_id()
+	_citizen = Globals.game_controller.get_node("GameBoard/Citizens").get_citizen_by_player_id(id)
+		
 	_remove_all_item_buttons()
 	_inventory = _selected_building.get_inventory_details()
 	for item_details in _inventory:
