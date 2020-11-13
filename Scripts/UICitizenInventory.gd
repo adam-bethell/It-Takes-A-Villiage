@@ -1,6 +1,5 @@
 extends Control
 
-onready var game_controller = get_node("../../GameBoard")
 onready var item_button_prefab = preload("res://Prefabs/UI/ItemButton.tscn")
 
 var _citizen = null
@@ -30,4 +29,4 @@ func _create_item_button(item):
 	$ItemListContainer/ItemList.add_child(button)
 	
 func _on_item_pressed(item):
-	game_controller.drop_player_item(item)
+	Globals.game_controller.drop_player_item(item)

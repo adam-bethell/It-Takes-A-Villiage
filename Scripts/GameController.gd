@@ -1,4 +1,4 @@
-extends Navigation
+extends Node
 
 signal missions_updated(mission_data)
 signal player_victory(name, objective)
@@ -13,17 +13,15 @@ var _citizen_ai = {}
 #| Create citizens
 func _ready():
 	Globals.game_controller = self
-	if not get_tree().is_network_server():
-		get_node("../UI/TimeLoop").hide()
 	
 	if get_tree().is_network_server():
 		# Create citizens
 		for i in range(19):
-			var pos = $CitizenSpawns.get_children()[i].global_transform.origin
-			var citizen_id = $Citizens.add_citizen(pos)
+			var pos = $GameBoard/CitizenSpawns.get_children()[i].global_transform.origin
+			var citizen_id = $GameBoard/Citizens.add_citizen(pos)
 			var citizen_tasks = citizen_tasks_node.instance()
 			_citizen_tasks[citizen_id] = citizen_tasks
-			get_node("../CitizenAI").add_child(citizen_tasks)
+			get_node("CitizenAI").add_child(citizen_tasks)
 			
 		# Assign player citizens and objectives
 		var objectives = Objectives.MISSIONS
@@ -31,7 +29,7 @@ func _ready():
 		randomize()
 		objectives.shuffle()
 		for id in Network.player_data:
-			$Citizens.assign_citizen_to_player(id)
+			$GameBoard/Citizens.assign_citizen_to_player(id)
 			var objective = objectives[o]
 			objective["player_id"] = id
 			objective["equiped_items"] = []
@@ -41,12 +39,12 @@ func _ready():
 		_update_missions()
 		
 		# Give AI to non-player citizens
-		for citizen in $Citizens.get_children():
+		for citizen in $GameBoard/Citizens.get_children():
 			var citizen_ai = citizen_ai_node.instance()
 			citizen_ai.citizen = citizen
 			citizen_ai.citizen_tasks = _citizen_tasks[citizen.citizen_id]
 			_citizen_ai[citizen.citizen_id] = citizen_ai
-			get_node("../CitizenAI").add_child(citizen_ai)
+			get_node("CitizenAI").add_child(citizen_ai)
 			if citizen.player_id == -1:
 				citizen_ai.enabled = true
 			else:
@@ -55,7 +53,7 @@ func _ready():
 #| Set citizen destination
 func set_player_citizen_destination(dest, walk):
 	var id = get_tree().get_network_unique_id()
-	var citizen_id = $Citizens.get_citizen_by_player_id(id).citizen_id
+	var citizen_id = $GameBoard/Citizens.get_citizen_by_player_id(id).citizen_id
 	set_citizen_destination(citizen_id, dest, walk)
 
 func set_citizen_destination(citizen_id, dest, walk):
@@ -67,16 +65,16 @@ func set_citizen_destination(citizen_id, dest, walk):
 remote func _rpc_set_citizen_destination(citizen_id, dest, walk):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
-	if $Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
+	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
 		assert(false)
 		return
 	_set_citizen_destination(citizen_id, dest, walk)
 	
 func _set_citizen_destination(citizen_id, dest, walk):
 	assert(get_tree().is_network_server())
-	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
+	var citizen = $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id)
 	citizen.set_destination(dest, walk)
-	$Citizens.sync_positions()
+	$GameBoard/Citizens.sync_positions()
 	if citizen.player_id != -1: 
 		# Record tasks for player controlled citizens
 		_citizen_tasks[citizen_id].log_movement(citizen.global_transform.origin, dest, walk)
@@ -84,7 +82,7 @@ func _set_citizen_destination(citizen_id, dest, walk):
 #| Equip item
 func equip_player_item(item):
 	var id = get_tree().get_network_unique_id()
-	var citizen_id = $Citizens.get_citizen_by_player_id(id).citizen_id
+	var citizen_id = $GameBoard/Citizens.get_citizen_by_player_id(id).citizen_id
 	equip_item(citizen_id, item)
 
 func equip_item(citizen_id, item):
@@ -96,15 +94,15 @@ func equip_item(citizen_id, item):
 remote func _rpc_equip_item(citizen_id, item):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
-	if $Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
+	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
 		assert(false)
 		return
 	_equip_item(citizen_id, item)
 	
 func _equip_item(citizen_id, item):
 	assert(get_tree().is_network_server())
-	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
-	var building = $BoardNavMesh/Buildings.get_nearest_building(citizen.global_transform.origin)
+	var citizen = $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id)
+	var building = $GameBoard/BoardNavMesh/Buildings.get_nearest_building(citizen.global_transform.origin)
 	var dist = citizen.global_transform.origin.distance_to(building.entrance_position)
 	if dist < Globals.ACTION_DISTANCE and building.has_item(item):
 		citizen.equip_item(item)
@@ -119,7 +117,7 @@ func _equip_item(citizen_id, item):
 #| Drop Item
 func drop_player_item(item):
 	var id = get_tree().get_network_unique_id()
-	var citizen_id = $Citizens.get_citizen_by_player_id(id).citizen_id
+	var citizen_id = $GameBoard/Citizens.get_citizen_by_player_id(id).citizen_id
 	drop_item(citizen_id, item)
 	
 func drop_item(citizen_id, item):
@@ -131,17 +129,17 @@ func drop_item(citizen_id, item):
 remote func _rpc_drop_item(citizen_id, item):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
-	if $Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
+	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
 		assert(false)
 		return
 	_drop_item(citizen_id, item)
 	
 func _drop_item(citizen_id, item):
 	assert(get_tree().is_network_server())
-	var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
+	var citizen = $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id)
 	if not citizen.has_item(item):
 		return false
-	var buildings = $BoardNavMesh/Buildings.get_buildings(Objectives.BUILDINGS.DEAD_DROP)
+	var buildings = $GameBoard/BoardNavMesh/Buildings.get_buildings(Objectives.BUILDINGS.DEAD_DROP)
 	for building in buildings:
 		var dist = citizen.global_transform.origin.distance_to(building.entrance_position)
 		if dist < Globals.ACTION_DISTANCE:
@@ -159,7 +157,8 @@ func _update_missions():
 	assert(get_tree().is_network_server())
 	# Update mission data
 	for mission in _mission_data:
-		var inventory = $Citizens.get_citizen_by_player_id(mission["player_id"]).get_inventory()
+		mission["equiped_items"].clear()
+		var inventory = $GameBoard/Citizens.get_citizen_by_player_id(mission["player_id"]).get_inventory()
 		for requirement in mission["requirements"]:
 			if inventory.has(requirement):
 				mission["equiped_items"].push_back(requirement)
@@ -210,10 +209,10 @@ func _complete_mission(id):
 	print("inventory checked")
 	# Get / check positions
 	var in_range = false
-	var citizen_position = $Citizens.get_citizen_by_player_id(id).global_transform.origin
+	var citizen_position = $GameBoard/Citizens.get_citizen_by_player_id(id).global_transform.origin
 	var building_type = objective["location"]
 	print("Building type: " + str(building_type))
-	var buildings = $BoardNavMesh/Buildings.get_buildings(building_type)
+	var buildings = $GameBoard/BoardNavMesh/Buildings.get_buildings(building_type)
 	print("Found " + str(buildings.size()) + " buildings")
 	for building in buildings:
 		var dist = citizen_position.distance_to(building.entrance_position)
@@ -235,19 +234,19 @@ remotesync func _rpc_player_won(name, objective):
 func _on_time_loop():
 	assert(get_tree().is_network_server())
 	# Call time_loop() in children
-	$Citizens.time_loop()
-	$Citizens.sync_positions()
+	$GameBoard/Citizens.time_loop()
+	$GameBoard/Citizens.sync_positions()
 	for citizen_tasks in _citizen_tasks.values():
 		citizen_tasks.time_loop()
 	
 	# Assign new player citizens
 	for id in Network.player_data:
-		$Citizens.assign_citizen_to_player(id)
+		$GameBoard/Citizens.assign_citizen_to_player(id)
 	_update_missions()
 	
 	# Enable / diable AI
 	for citizen_id in _citizen_ai:
-		var citizen = $Citizens.get_citizen_by_citizen_id(citizen_id)
+		var citizen = $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id)
 		_citizen_ai[citizen_id].time_loop()
 		if citizen.player_id == -1:
 			# Add AI for non-player citizens
@@ -256,4 +255,4 @@ func _on_time_loop():
 			# Remove AI for player citizens
 			_citizen_ai[citizen_id].enabled = false
 			
-	$BoardNavMesh/Buildings.time_loop()
+	$GameBoard/BoardNavMesh/Buildings.time_loop()

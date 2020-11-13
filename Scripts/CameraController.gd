@@ -5,7 +5,6 @@ const SPEED = 60.0
 const ROTATION = 0.8
 const ZOOM = 1
 onready var camera = $Camera
-onready var game_controller = get_node("../GameBoard")
 
 #| Movement
 func _process(delta):
@@ -70,10 +69,10 @@ func _physics_process(delta):
 		if result.size() > 0:
 			if result.collider.get_collision_layer() == 2:
 				# Grass
-				game_controller.set_player_citizen_destination(result.position, walk)
+				Globals.game_controller.set_player_citizen_destination(result.position, walk)
 			elif result.collider.get_collision_layer() == 4: 
 				# Building
 				var building = result.collider.get_owner()
 				building.selected()
-				game_controller.set_player_citizen_destination(building.entrance_position, walk)
+				Globals.game_controller.set_player_citizen_destination(building.entrance_position, walk)
 

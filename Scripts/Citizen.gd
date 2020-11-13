@@ -7,8 +7,8 @@ signal citizen_updated()
 export var mesh_name = "" setget set_mesh_by_name
 
 # Nav
+onready var nav = get_parent().get_parent()
 onready var _previous_position = global_transform.origin
-onready var gc = get_parent().get_parent()
 
 const WALK_SPEED = 4
 const RUN_SPEED = 10
@@ -67,7 +67,7 @@ func _physics_process(delta):
 
 func set_destination(position, _is_walking):
 	is_walking = _is_walking
-	nav_path = gc.get_simple_path(global_transform.origin, position)
+	nav_path = nav.get_simple_path(global_transform.origin, position)
 	nav_path_index = 0
 	
 
