@@ -1,15 +1,26 @@
 extends Control
 
-onready var game_controller = get_node("../../GameBoard")
 onready var item_button_prefab = preload("res://Prefabs/UI/ItemButton.tscn")
+#onready var citizens = Globals.game_controller.get_child("Citizens")
+
+var _citizen = null
 
 var _objective_items = []
 var _selected_building = null
 var _buttons = []
 var _inventory = []
 
+func _process(_delta):
+	pass
+	#if _selected_building != null:
+		#var pos = _citizen.global_transform.origin
+		#if pos.distance_to(building.building_entrance)
+	
 
 func _on_building_selected(building):
+	#var id = get_tree().get_network_unique_id()
+	#var _citizen = $citizens.get_citizen_by_player_id(id)
+	
 	_selected_building = building
 	$Label.text = Objectives.BUILDING_INFO[_selected_building.building_type]["label"]
 	_on_building_updated(building)
@@ -25,7 +36,7 @@ func _on_building_updated(building):
 func _on_item_pressed(item):
 	if _selected_building == null:
 		return
-	game_controller.equip_player_item(item)
+	Globals.game_controller.equip_player_item(item)
 
 func _remove_all_item_buttons():
 	for button in $ItemListContainer/ItemList.get_children():

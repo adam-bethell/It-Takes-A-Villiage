@@ -18,8 +18,8 @@ func _ready():
 	
 	if get_tree().is_network_server():
 		# Create citizens
-		for i in range(16):
-			var pos = Vector3(3 * i, 0, 0)
+		for i in range(19):
+			var pos = $CitizenSpawns.get_children()[i].global_transform.origin
 			var citizen_id = $Citizens.add_citizen(pos)
 			var citizen_tasks = citizen_tasks_node.instance()
 			_citizen_tasks[citizen_id] = citizen_tasks
