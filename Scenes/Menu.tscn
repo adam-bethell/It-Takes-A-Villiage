@@ -55,13 +55,12 @@ __meta__ = {
 }
 
 [node name="StartButton" type="Button" parent="."]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 100.0
-margin_top = 50.0
-margin_right = -100.0
-margin_bottom = -400.0
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -412.0
+margin_top = 10.0
+margin_right = 412.0
+margin_bottom = 150.0
 script = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

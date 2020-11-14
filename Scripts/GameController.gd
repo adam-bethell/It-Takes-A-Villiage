@@ -29,7 +29,7 @@ func _ready():
 		randomize()
 		objectives.shuffle()
 		for id in Network.player_data:
-			$GameBoard/Citizens.assign_citizen_to_player(id)
+			assign_citizen_to_player(id)
 			var objective = objectives[o]
 			objective["player_id"] = id
 			objective["equiped_items"] = []
@@ -38,7 +38,7 @@ func _ready():
 		_mission_data.shuffle()
 		_update_missions()
 		
-		# Give AI to non-player citizens
+		# Give AI and tasks to non-player citizens
 		for citizen in $GameBoard/Citizens.get_children():
 			var citizen_ai = citizen_ai_node.instance()
 			citizen_ai.citizen = citizen
@@ -47,8 +47,15 @@ func _ready():
 			get_node("CitizenAI").add_child(citizen_ai)
 			if citizen.player_id == -1:
 				citizen_ai.enabled = true
+				# Generate tasks
+				$GameBoard/CitizenTaskGenerator.generate_tasks(citizen, citizen_ai.citizen_tasks)
 			else:
 				citizen_ai.enabled = false
+	
+func assign_citizen_to_player(id):
+	$GameBoard/Citizens.assign_citizen_to_player(id)
+	var citizen_id = $GameBoard/Citizens.get_citizen_by_player_id(id).citizen_id
+	_citizen_tasks[citizen_id].clear()
 	
 #| Set citizen destination
 func set_player_citizen_destination(dest, walk):
@@ -241,7 +248,7 @@ func _on_time_loop():
 	
 	# Assign new player citizens
 	for id in Network.player_data:
-		$GameBoard/Citizens.assign_citizen_to_player(id)
+		assign_citizen_to_player(id)
 	_update_missions()
 	
 	# Enable / diable AI
