@@ -39,9 +39,9 @@ func _process(delta):
 	# Zoom
 	var zoom = 0.0
 	if not get_tree().is_input_handled():
-		if Input.is_action_just_released("camera_zoom_in"):
+		if Input.is_action_pressed("camera_zoom_in") or Input.is_action_just_released("camera_zoom_in"):
 			zoom -= ZOOM
-		if Input.is_action_just_released("camera_zoom_out"):
+		if Input.is_action_pressed("camera_zoom_out") or Input.is_action_just_released("camera_zoom_out"):
 			zoom += ZOOM
 	
 	transform.origin = Vector3(
