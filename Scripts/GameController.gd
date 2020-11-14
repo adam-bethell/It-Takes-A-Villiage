@@ -73,7 +73,6 @@ remote func _rpc_set_citizen_destination(citizen_id, dest, walk):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
 	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
-		assert(false)
 		return
 	_set_citizen_destination(citizen_id, dest, walk)
 	
@@ -102,7 +101,6 @@ remote func _rpc_equip_item(citizen_id, item):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
 	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
-		assert(false)
 		return
 	_equip_item(citizen_id, item)
 	
@@ -137,7 +135,6 @@ remote func _rpc_drop_item(citizen_id, item):
 	var id = get_tree().get_rpc_sender_id()
 	assert(get_tree().is_network_server())
 	if $GameBoard/Citizens.get_citizen_by_citizen_id(citizen_id).player_id != id:
-		assert(false)
 		return
 	_drop_item(citizen_id, item)
 	

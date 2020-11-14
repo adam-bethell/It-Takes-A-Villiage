@@ -368,7 +368,7 @@ far = 857.0
 [node name="UI" type="CanvasLayer" parent="."]
 follow_viewport_enable = true
 
-[node name="Diagetic" type="Node" parent="UI"]
+[node name="Diagetic" type="YSort" parent="UI"]
 
 [node name="BuildingInfo" type="Control" parent="UI"]
 anchor_top = 1.0
