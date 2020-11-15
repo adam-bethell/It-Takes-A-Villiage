@@ -126,6 +126,8 @@ func time_loop():
 		if owner_id == 1:
 			emit_signal("citizen_updated")
 		else:
+			rpc_id(owner_id, "_rpc_time_loop")
 			rpc_id(owner_id, "_rpc_update_inventory", _inventory)
 	
-
+remote func _rpc_time_loop():
+	player_id = -1

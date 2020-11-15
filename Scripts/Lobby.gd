@@ -5,9 +5,10 @@ func _on_HostButton_pressed():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	
-	#var upnp = UPNP.new()
-	#upnp.discover()
-	#upnp.add_port_mapping(int($Port.text))
+	if $IP.text == "p":
+		var upnp = UPNP.new()
+		upnp.discover()
+		upnp.add_port_mapping(int($Port.text))
 	
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(int($Port.text), Network.DEFAULT_NUM_PLAYERS)
@@ -22,9 +23,24 @@ func _on_HostButton_pressed():
 	$PlayerName.hide()
 	$IP.hide()
 	$Port.hide()
+	
 	# Show Start button
+	$IpInfo.text = "Your local IP addresses are:"
+	var local_ip_addresses = IP.get_local_addresses()
+	for i in local_ip_addresses.size() / 2:
+		$IpInfo.text += "\n" + str(local_ip_addresses[i*2 + 1])
+	$IpInfo.show()
+	
+	var http = HTTPRequest.new()
+	add_child(http)
+	http.connect("request_completed", self, "_on_http_request_completed")
+	http.request("https://api.ipify.org")
+	
 	$StartButton.show()
-
+	
+func _on_http_request_completed(result, response_code, headers, body):
+	$IpInfo.text += "\n\nYour public IP address is:\n" + body.get_string_from_utf8()
+	
 func _on_JoinButton_pressed():
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	

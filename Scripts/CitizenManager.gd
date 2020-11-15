@@ -54,17 +54,18 @@ func get_mesh_path():
 	return path
 	
 func add_citizen(position):
+	assert(get_tree().is_network_server())
 	var mesh_path = get_mesh_path()
 	var citizen_id = _citizen_id
-	rpc("_rpc_add_citizen", mesh_path, position)
+	rpc("_rpc_add_citizen", citizen_id, mesh_path, position)
+	_citizen_id += 1
 	return citizen_id
 
-remotesync func _rpc_add_citizen(mesh_path, position):
+remotesync func _rpc_add_citizen(citizen_id, mesh_path, position):
 	# Add game object
 	var citizen = citizen_node.instance()
-	citizen.set_name(str(_citizen_id))
-	citizen.citizen_id = _citizen_id
-	_citizen_id += 1
+	citizen.set_name(str(citizen_id))
+	citizen.citizen_id = citizen_id
 	citizen.set_mesh_path(mesh_path)
 	citizen.start_position = position
 	add_child(citizen)
@@ -107,6 +108,7 @@ func set_player_citizen_destination(id, dest, walk):
 	
 	
 func sync_positions():
+	assert(get_tree().is_network_server())
 	var citizen_data = {}
 	for citizen in get_children():
 		citizen_data[citizen.name] = {
@@ -129,5 +131,6 @@ remote func _rpc_sync_positions(citizen_data):
 		citizen.is_walking = data["is_walking"]
 
 func time_loop():
+	assert(get_tree().is_network_server())
 	for citizen in get_children():
 		citizen.time_loop()

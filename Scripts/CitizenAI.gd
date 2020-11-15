@@ -6,7 +6,7 @@ var citizen_tasks = null
 
 var _current_task = null
 
-func _process(delta):
+func _process(_delta):
 	if not enabled:
 		return
 	

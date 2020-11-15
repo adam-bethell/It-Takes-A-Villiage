@@ -7,7 +7,7 @@ func _ready():
 	pass # Replace with function body.
 
 
-func _process(delta):
+func _process(_delta):
 	# Get current linear velocity
 	
 	var velocity = get_parent().linear_velocity
