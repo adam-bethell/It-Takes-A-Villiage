@@ -10,7 +10,7 @@ data = PoolVector3Array( -1.4, 6.7475, -5.2647, -1.4, 6.7828, -5.3, -1.5414, 6.7
 script = ExtResource( 2 )
 
 [node name="StaticBody" type="StaticBody" parent="building-cinema" index="0"]
-collision_layer = 4
+collision_layer = 12
 
 [node name="CollisionShape" type="CollisionShape" parent="building-cinema/StaticBody" index="0"]
 shape = SubResource( 1 )

@@ -56,23 +56,37 @@ func _physics_process(_delta):
 	# It is only safe to get the space_state during _physics 
 	if get_tree().is_input_handled():
 		return
+	
+	# Raycast
+	var space_state = get_world().direct_space_state
+	var mouse_position = get_viewport().get_mouse_position()
+	var from = camera.project_ray_origin(mouse_position)
+	var to = from + (camera.project_ray_normal(mouse_position) * 1000.0)	
+	var result = space_state.intersect_ray(from, to)
+	if result.size() == 0:
+		return
 		
+	# Handle mouse input
 	if Input.is_action_just_pressed("mouse_select_1") or Input.is_action_just_pressed("mouse_select_2"):
 		var walk = Input.is_action_just_pressed("mouse_select_1")
-		var space_state = get_world().direct_space_state
-		
-		var mouse_position = get_viewport().get_mouse_position()
-		var from = camera.project_ray_origin(mouse_position)
-		var to = from + (camera.project_ray_normal(mouse_position) * 1000.0)
-		
-		var result = space_state.intersect_ray(from, to)
-		if result.size() > 0:
-			if result.collider.get_collision_layer() == 2:
-				# Grass
-				Globals.game_controller.set_player_citizen_destination(result.position, walk)
-			elif result.collider.get_collision_layer() == 4: 
-				# Building
-				var building = result.collider.get_owner()
-				building.selected()
-				Globals.game_controller.set_player_citizen_destination(building.entrance_position, walk)
+		if result.collider.get_collision_layer_bit(1):
+			# Grass
+			Globals.game_controller.set_player_citizen_destination(result.position, walk)
+		elif result.collider.get_collision_layer_bit(2):
+			# Building
+			var building = result.collider.get_owner()
+			building.selected()
+			Globals.game_controller.set_player_citizen_destination(building.entrance_position, walk)
 
+	# Selection tooltips
+	if result.collider.get_collision_layer_bit(3):
+		var tool_tip = ""
+		if result.collider.get_collision_layer_bit(2):
+			tool_tip = result.collider.get_owner().name
+		else:
+			tool_tip = result.collider.tool_tip
+		get_node("../UI/ToolTip").text = tool_tip
+		get_node("../UI/ToolTip").rect_global_position = mouse_position + Vector2(15, 15)
+		get_node("../UI/ToolTip").show()
+	else:
+		get_node("../UI/ToolTip").hide()

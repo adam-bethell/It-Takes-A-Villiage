@@ -14,6 +14,7 @@ const WALK_SPEED = 4
 const RUN_SPEED = 10
 const ROTATION_SPEED = 3
 
+onready var tool_tip = "Citizen " + str(citizen_id) 
 var is_walking = true
 var _rotation_amount = 0
 var linear_velocity = Vector3.ZERO

@@ -5,7 +5,7 @@ func _on_HostButton_pressed():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	
-	if $IP.text == "p":
+	if $IP.text == "upnp":
 		var upnp = UPNP.new()
 		upnp.discover()
 		upnp.add_port_mapping(int($Port.text))
@@ -38,7 +38,7 @@ func _on_HostButton_pressed():
 	
 	$StartButton.show()
 	
-func _on_http_request_completed(result, response_code, headers, body):
+func _on_http_request_completed(_result, _response_code, _headers, body):
 	$IpInfo.text += "\n\nYour public IP address is:\n" + body.get_string_from_utf8()
 	
 func _on_JoinButton_pressed():

@@ -90,6 +90,7 @@ camera_zoom_out={
 3d_physics/layer_1="Default"
 3d_physics/layer_2="Walkable Ground"
 3d_physics/layer_3="Building"
+3d_physics/layer_4="Tool Tip"
 
 [rendering]
 

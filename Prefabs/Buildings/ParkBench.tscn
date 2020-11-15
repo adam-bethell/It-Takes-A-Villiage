@@ -11,7 +11,7 @@ script = ExtResource( 2 )
 building_type = 8
 
 [node name="StaticBody" type="StaticBody" parent="bench-old" index="0"]
-collision_layer = 4
+collision_layer = 12
 
 [node name="CollisionShape" type="CollisionShape" parent="bench-old/StaticBody" index="0"]
 shape = SubResource( 1 )
